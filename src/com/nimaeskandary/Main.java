@@ -1,8 +1,8 @@
 package com.nimaeskandary;
 
 public class Main {
-
     public static void main(String[] args) {
-	// write your code here
+        Client client = new Client(System.in, System.out, new FileSystemRepository(""));
+        client.start();
     }
 }
