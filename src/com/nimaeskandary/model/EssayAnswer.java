@@ -1,6 +1,8 @@
-package com.nimaeskandary;
+package com.nimaeskandary.model;
 
-public class EssayAnswer extends Answer {
+import java.io.Serializable;
+
+public class EssayAnswer extends Answer implements Serializable {
     private String answerData;
 
     public EssayAnswer(String answerData) {

@@ -1,6 +1,10 @@
-package com.nimaeskandary;
+package com.nimaeskandary.model;
 
-public class TrueOrFalseAnswer extends Answer {
+import com.nimaeskandary.model.Answer;
+
+import java.io.Serializable;
+
+public class TrueOrFalseAnswer extends Answer implements Serializable {
     private String tOrF;
 
     public TrueOrFalseAnswer(String tOrF) {
@@ -9,7 +13,7 @@ public class TrueOrFalseAnswer extends Answer {
 
     @Override
     public String toString() {
-        return null;
+        return this.tOrF;
     }
 
     @Override

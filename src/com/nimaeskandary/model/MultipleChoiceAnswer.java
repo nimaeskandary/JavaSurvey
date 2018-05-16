@@ -1,8 +1,11 @@
-package com.nimaeskandary;
+package com.nimaeskandary.model;
 
+import com.nimaeskandary.model.Answer;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MultipleChoiceAnswer extends Answer {
+public class MultipleChoiceAnswer extends Answer implements Serializable {
     private ArrayList<Integer> answerData;
 
     public MultipleChoiceAnswer(ArrayList<Integer> answerData) {
@@ -11,7 +14,11 @@ public class MultipleChoiceAnswer extends Answer {
 
     @Override
     public String toString() {
-        return null;
+        String out = "";
+        for (Integer answer: this.answerData) {
+            out += answer + "\n";
+        }
+        return out;
     }
 
     @Override

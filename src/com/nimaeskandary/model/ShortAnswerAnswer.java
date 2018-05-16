@@ -1,6 +1,10 @@
-package com.nimaeskandary;
+package com.nimaeskandary.model;
 
-public class ShortAnswerAnswer extends Answer {
+import com.nimaeskandary.model.Answer;
+
+import java.io.Serializable;
+
+public class ShortAnswerAnswer extends Answer implements Serializable {
     private String answerData;
 
     public ShortAnswerAnswer(String answerData) {
@@ -9,7 +13,7 @@ public class ShortAnswerAnswer extends Answer {
 
     @Override
     public String toString() {
-        return null;
+        return this.answerData;
     }
 
     @Override

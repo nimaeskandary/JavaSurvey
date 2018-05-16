@@ -1,4 +1,4 @@
-package com.nimaeskandary;
+package com.nimaeskandary.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,6 +7,12 @@ public class Survey implements Serializable {
     public String title;
     public String takerName;
     public ArrayList<SurveyQuestion> questions;
+
+    public Survey() {
+        this.title = null;
+        this.takerName = null;
+        this.questions = new ArrayList<SurveyQuestion>(1);
+    }
 
     public Survey(String title, String takerName) {
         this.title = title;
@@ -39,5 +45,23 @@ public class Survey implements Serializable {
 
     public SurveyResults getResults() {
         return new SurveyResults();
+    }
+
+    @Override
+    public String toString() {
+        String survey = "Title: " + this.title + "\n";
+
+        survey += "Taker Name: ";
+        survey += (this.takerName != null) ? this.takerName : "";
+        survey += "\n";
+
+        for (int i = 0; i < this.questions.size(); i++) {
+            SurveyQuestion question = this.questions.get(i);
+            int questionNumber = i + 1;
+            survey += "Question #" + questionNumber + "\n";
+            survey += question.toString();
+        }
+
+        return survey;
     }
 }
