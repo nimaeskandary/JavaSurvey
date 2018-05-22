@@ -10,7 +10,7 @@ public class StartMenu extends Menu {
     }
 
     public enum StartMenuSelection implements MenuSelection {
-        Survey, Test, Invalid;
+        Survey, Test, Quit, Invalid;
     }
 
     @Override
@@ -20,6 +20,8 @@ public class StartMenu extends Menu {
                 return StartMenuSelection.Survey;
             case "2":
                 return StartMenuSelection.Test;
+            case "3":
+                return StartMenuSelection.Quit;
             default:
                 return StartMenuSelection.Invalid;
         }
@@ -34,12 +36,13 @@ public class StartMenu extends Menu {
     public String getMenuText() {
         String text = "\n1) Survey\n";
         text += "2) Test\n";
+        text += "3) Quit\n";
         text += "\nEnter selection:";
         return text;
     }
 
     @Override
     String invalidInputMessage() {
-        return "\nInvalid input! Must be 1 or 2\n" + this.getMenuText();
+        return "\nInvalid input! Must be 1, 2, or 3\n" + this.getMenuText();
     }
 }

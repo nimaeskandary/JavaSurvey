@@ -15,7 +15,7 @@ public class SurveyActionMenu extends Menu {
     }
 
     public enum SurveyActionMenuSelection implements MenuSelection {
-        Create, Display, Load, Save, Quit, Invalid;
+        Create, Display, Load, Save, MainMenu, Invalid;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class SurveyActionMenu extends Menu {
             case "4":
                 return SurveyActionMenuSelection.Save;
             case "5":
-                return SurveyActionMenuSelection.Quit;
+                return SurveyActionMenuSelection.MainMenu;
             default:
                 return SurveyActionMenuSelection.Invalid;
         }
@@ -48,7 +48,7 @@ public class SurveyActionMenu extends Menu {
         text += String.format("2) Display a %s\n", surveyOrTest);
         text += String.format("3) Load a %s\n", surveyOrTest);
         text += String.format("4) Save a %s\n", surveyOrTest);
-        text += "5) Quit\n";
+        text += "5) Main Menu\n";
         text += "\nEnter selection:";
         return text;
     }

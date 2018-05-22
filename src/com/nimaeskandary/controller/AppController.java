@@ -30,9 +30,11 @@ public class AppController {
             case Survey:
                 this.surveyController.SurveyActionScreen();
                 break;
-            default:
+            case Test:
                 this.testController.SurveyActionScreen();
                 break;
+            default:
+                return;
         }
         this.menuScreen();
     }
