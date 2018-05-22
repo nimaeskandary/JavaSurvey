@@ -3,17 +3,22 @@ package com.nimaeskandary.model;
 import com.nimaeskandary.model.Answer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class ShortAnswerAnswer extends Answer implements Serializable {
-    private String answerData;
+    private ArrayList<String> answerData;
 
-    public ShortAnswerAnswer(String answerData) {
+    public ShortAnswerAnswer(ArrayList<String> answerData) {
         this.answerData = answerData;
     }
 
     @Override
     public String toString() {
-        return this.answerData;
+        String out = "";
+        for (String s: this.answerData) {
+            out += s + "\n";
+        }
+        return out;
     }
 
     @Override

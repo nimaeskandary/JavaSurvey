@@ -137,18 +137,17 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("Enter the prompt for your true/false question:\n");
 
-        String prompt = simpleInput.getValidInput() + "\n";
-        PromptList promptList = new PromptList(prompt);
+        PromptList promptList = new PromptList(simpleInput.getValidInput());
 
         // if test get right answer
         if(this.isTest) {
             simpleInput.display("What is the correct answer?\n");
-            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.TrueOrFalse, prompt);
+            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.TrueOrFalse, promptList);
             testQuestion.correctAnswer = this.answerController.answerQuestion(testQuestion);
             this.currentSurvey.addQuestion(testQuestion);
 
         } else {
-            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.TrueOrFalse, prompt);
+            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.TrueOrFalse, promptList);
             this.currentSurvey.addQuestion(surveyQuestion);
         }
     }
@@ -157,32 +156,26 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("Enter the prompt for your multiple choice question:\n");
 
-        StringBuilder promptText = new StringBuilder(simpleInput.getValidInput());
-        promptText.append("\n");
+        MultipleChoicePromptList promptList = new MultipleChoicePromptList(simpleInput.getValidInput());
 
         simpleInput.display("Enter the number of choices for your multiple choice question:\n");
         Integer numChoices = simpleInput.getValidIntegerInput();
 
-        // format prompt: i) input \n
+        // add options
         for (int i = 1; i <= numChoices; i ++) {
             simpleInput.display("Enter choice #" + i + ":\n");
-            promptText.append(i);
-            promptText.append(") ");
-            promptText.append(simpleInput.getValidInput());
-            promptText.append("\n");
+            promptList.addPrompt(simpleInput.getValidInput());
         }
-
-        PromptList prompt = new PromptList(promptText.toString());
 
         // if test then get correct answer
         if(this.isTest) {
             simpleInput.display("What is the correct answer?\n");
-            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.MultipleChoice, prompt, numChoices);
+            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.MultipleChoice, promptList, numChoices);
             testQuestion.correctAnswer = this.answerController.answerQuestion(testQuestion);
             this.currentSurvey.addQuestion(testQuestion);
 
         } else {
-            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.MultipleChoice, prompt, numChoices);
+            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.MultipleChoice, promptList, numChoices);
             this.currentSurvey.addQuestion(surveyQuestion);
         }
     }
@@ -191,17 +184,17 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("Enter the prompt for your short answer question:\n");
 
-        PromptList prompt = new PromptList(simpleInput.getValidInput() + "\n");
+        PromptList promptList = new PromptList(simpleInput.getValidInput());
 
         // if test get right answer
         if(this.isTest) {
             simpleInput.display("What is the correct answer?\n");
-            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.ShortAnswer, prompt);
+            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.ShortAnswer, promptList);
             testQuestion.correctAnswer = this.answerController.answerQuestion(testQuestion);
             this.currentSurvey.addQuestion(testQuestion);
 
         } else {
-            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.ShortAnswer, prompt);
+            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.ShortAnswer, promptList);
             this.currentSurvey.addQuestion(surveyQuestion);
         }
         }
@@ -210,8 +203,8 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("Enter the prompt for your essay answer question:\n");
 
-        PromptList prompt = new PromptList(simpleInput.getValidInput() + "\n");
-        SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.EssayAnswer, prompt);
+        PromptList promptList = new PromptList(simpleInput.getValidInput());
+        SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.EssayAnswer, promptList);
 
         this.currentSurvey.addQuestion(surveyQuestion);
     }
@@ -220,8 +213,7 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("Enter the prompt for your ranking question:\n");
 
-        StringBuilder promptText = new StringBuilder(simpleInput.getValidInput());
-        promptText.append("\n");
+        RankingPromptList promptList = new RankingPromptList(simpleInput.getValidInput());
 
         simpleInput.display("Enter the number of items in your ranking question:\n");
         Integer numChoices = simpleInput.getValidIntegerInput();
@@ -236,24 +228,18 @@ public class SurveyController {
         // use chars as counter to use as labels
         for (char option = 'A'; option < 'A' + numChoices; option ++) {
             simpleInput.display("Enter option " + option + " (these are not randomized when outputted):\n");
-            promptText.append("Option ");
-            promptText.append(option);
-            promptText.append(") ");
-            promptText.append(simpleInput.getValidInput());
-            promptText.append("\n");
+            promptList.addPrompt(simpleInput.getValidInput());
         }
-
-        PromptList prompt = new PromptList(promptText.toString());
 
         // if test get right answer
         if(this.isTest) {
             simpleInput.display("What is the correct answer?\n");
-            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.Ranking, prompt, numChoices);
+            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.Ranking, promptList, numChoices);
             testQuestion.correctAnswer = this.answerController.answerQuestion(testQuestion);
             this.currentSurvey.addQuestion(testQuestion);
 
         } else {
-            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.Ranking, prompt, numChoices);
+            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.Ranking, promptList, numChoices);
             this.currentSurvey.addQuestion(surveyQuestion);
         }
     }

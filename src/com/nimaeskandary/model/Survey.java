@@ -53,7 +53,7 @@ public class Survey implements Serializable {
 
         survey += "Taker Name: ";
         survey += (this.takerName != null) ? this.takerName : "";
-        survey += "\n";
+        survey += "\n\n";
 
         for (int i = 0; i < this.questions.size(); i++) {
             SurveyQuestion question = this.questions.get(i);

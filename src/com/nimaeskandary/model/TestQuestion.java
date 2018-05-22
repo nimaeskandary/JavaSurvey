@@ -23,7 +23,7 @@ public class TestQuestion extends SurveyQuestion implements Serializable {
         String question = "Question Type: " + this.type.name() + "\n";
         question += this.promptList.toString() + "\n";
         question += "correct answer:\n";
-        question += this.correctAnswer.toString() + "\n\n";
+        question += this.correctAnswer.toString() + "\n";
         return question;
     }
 }

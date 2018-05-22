@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PromptList implements Serializable {
-    private List<String> prompts;
+    protected List<String> prompts;
 
     public PromptList() {
         this.prompts = new ArrayList<String>(1);

@@ -28,7 +28,7 @@ public class AnswerController {
                 answer = this.answerMultipleChoiceQuestion(question, new ArrayList<Integer>(question.allowedNumChoices));
                 break;
             case ShortAnswer:
-                answer = this.answerShortAnswerQuestion(question);
+                answer = this.answerShortAnswerQuestion(question, new ArrayList<String>(1));
                 break;
             case Ranking:
                 answer = this.answerRankingQuestion(question);
@@ -72,7 +72,7 @@ public class AnswerController {
             simpleInput.display("Would you like to add another response? Enter Y or N:\n");
             String another = simpleInput.getValidInput();
             while (!(another.equals("Y") || another.equals("N"))) {
-                simpleInput.display("Input must be Y or N:\n");
+                simpleInput.display("\nInput must be Y or N:\n");
                 another = simpleInput.getValidInput();
             }
             if (another.equals("Y")) {
@@ -83,12 +83,23 @@ public class AnswerController {
         return new MultipleChoiceAnswer(responses);
     }
 
-    public Answer answerShortAnswerQuestion(SurveyQuestion question) {
+    public Answer answerShortAnswerQuestion(SurveyQuestion question, ArrayList<String> responses) {
         SimpleInput simpleInput = new SimpleInput(bufferedReader, outputStream);
-        simpleInput.display("Answer:\n");
+        simpleInput.display("Input a paragraph, [enter] to submit:\n");
         // no extra validations, getValidInput already checks for empty string
-        String response = simpleInput.getValidInput();
-        return new ShortAnswerAnswer(response);
+        responses.add(simpleInput.getValidInput());
+
+        simpleInput.display("Would you like to add another response? Enter Y or N:\n");
+        String another = simpleInput.getValidInput();
+        while (!(another.equals("Y") || another.equals("N"))) {
+            simpleInput.display("\nInput must be Y or N:\n");
+            another = simpleInput.getValidInput();
+        }
+        if (another.equals("Y")) {
+            return this.answerShortAnswerQuestion(question, responses);
+        }
+
+        return new ShortAnswerAnswer(responses);
     }
 
     public Answer answerRankingQuestion(SurveyQuestion question) {
