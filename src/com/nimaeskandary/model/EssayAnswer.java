@@ -11,8 +11,7 @@ public class EssayAnswer extends Answer implements Serializable {
 
     @Override
     public String toString() {
-      return null;
-
+      return this.answerData;
     }
 
     @Override
@@ -21,8 +20,13 @@ public class EssayAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
-        EssayAnswer otherEssayAnswer = (EssayAnswer) other;
+    public boolean equals(Object o) {
+        EssayAnswer otherEssayAnswer = (EssayAnswer) o;
         return this.answerData.equals(otherEssayAnswer.answerData);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.answerData.hashCode();
     }
 }

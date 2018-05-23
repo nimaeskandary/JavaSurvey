@@ -59,6 +59,22 @@ public class SimpleInput {
         return input;
     }
 
+    public char getValidChar() {
+        String input = "";
+        try {
+            input = bufferedReader.readLine();
+            while(input.isEmpty() || input.length() > 1) {
+                this.outputStream.write("Input must have length of 1:".getBytes());
+                this.outputStream.flush();
+                input = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return input.toCharArray()[0];
+    }
+
     // validate inputted string is only comprised of integers
     private Boolean isInteger(String input) {
         char[] chars = input.toCharArray();
@@ -69,5 +85,4 @@ public class SimpleInput {
         }
         return true;
     }
-
 }

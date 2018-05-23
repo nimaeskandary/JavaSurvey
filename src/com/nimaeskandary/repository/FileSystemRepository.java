@@ -16,10 +16,13 @@ public class FileSystemRepository extends Repository {
 
     @Override
     public void putSurveyRubric(Survey survey, Boolean isTest) {
-        String path = isTest ? "/tests/" : "/surveys/";
+        String path = isTest ? "tests" : "surveys";
         try {
+            // make directory if it doesn't exist
+            new File(String.format("%s/%s", this.root, path)).mkdirs();
             // serialize then write to file
-            FileOutputStream fileOutputStream = new FileOutputStream(this.root + path + survey.title);
+            FileOutputStream fileOutputStream = new FileOutputStream(String.format("%s/%s/%s",
+                    this.root, path, survey.title));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(survey);
             objectOutputStream.close(); // closes fileOutputStream too
@@ -50,12 +53,13 @@ public class FileSystemRepository extends Repository {
     }
 
     @Override
-    public Survey getSurveyRubric(String surveyName, Boolean isTest) {
-        String path = isTest ? "/tests/" : "/surveys/";
+    public Survey getSurvey(String surveyName, Boolean isTest) {
+        String path = isTest ? "tests" : "surveys";
         Survey survey = null;
         try {
             // read serialized object from file
-            FileInputStream fileInputStream = new FileInputStream(this.root + path + surveyName);
+            FileInputStream fileInputStream = new FileInputStream(String.format("%s/%s/%s",
+                    this.root, path, surveyName, surveyName));
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             survey = (Survey) objectInputStream.readObject();
             objectInputStream.close(); // closes fileInputStream too
@@ -66,12 +70,19 @@ public class FileSystemRepository extends Repository {
     }
 
     @Override
-    public void putUserSurvey(Survey survey) {
-
-    }
-
-    @Override
-    public Survey getUserSurvey(String userName) {
-        return null;
+    public void putUserSurvey(Survey survey, Boolean isTest) {
+        String path = isTest ? "tests" : "surveys";
+        try {
+            // make directory if it doesn't exist
+            new File(String.format("%s/%s", this.root, path)).mkdirs();
+            // serialize then write to file
+            FileOutputStream fileOutputStream = new FileOutputStream(String.format("%s/%s/%s-%s",
+                    this.root, path, survey.title, survey.takerName));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(survey);
+            objectOutputStream.close(); // closes fileOutputStream too
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

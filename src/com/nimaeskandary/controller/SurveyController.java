@@ -7,7 +7,10 @@ import com.nimaeskandary.view.SurveyActionMenu.SurveyActionMenuSelection;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SurveyController {
     private OutputStream outputStream;
@@ -15,15 +18,18 @@ public class SurveyController {
     private Repository repository;
     private AnswerController answerController;
     private Survey currentSurvey;
+    private EditController editController;
     private Boolean isTest;
 
     public SurveyController(OutputStream outputStream, BufferedReader bufferedReader,
-                            Repository repository, AnswerController answerController, Boolean isTest) {
+                            Repository repository, AnswerController answerController,
+                            EditController editController, Boolean isTest) {
         this.outputStream = outputStream;
         this.bufferedReader = bufferedReader;
         this.repository = repository;
         this.answerController = answerController;
         this.currentSurvey = null;
+        this.editController = editController;
         this.isTest = isTest;
     }
 
@@ -47,8 +53,168 @@ public class SurveyController {
             case Save:
                 this.saveCurrentSurvey();
                 break;
+            case Modify:
+                this.chooseSurveyToModify();
+                break;
+            case Take:
+                this.chooseSurveyToTake();
+                break;
+            case Tabulate:
+                this.chooseSurveyToTabulate();
+                break;
             default:
                 break;
+        }
+    }
+
+    public void takeSurvey() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("Enter your name:\n");
+        this.currentSurvey.takerName = simpleInput.getValidInput();
+        for (SurveyQuestion q: this.currentSurvey.questions) {
+            simpleInput.display(q.toString());
+            q.userAnswer = this.answerController.answerQuestion(q);
+        }
+        this.repository.putUserSurvey(this.currentSurvey, this.isTest);
+    }
+
+    public void modifySurvey() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("\nCurrent:\n\n");
+        this.displayCurrentSurvey();
+
+        simpleInput.display("Do you want to modify this? (Y or N):\n");
+        String edit = simpleInput.getValidInput();
+        // check if T or F
+        while (!(edit.equals("Y") || edit.equals("N"))) {
+            simpleInput.display("Input must be Y or N:\n");
+            edit = simpleInput.getValidInput();
+        }
+
+        if (this.currentSurvey.questions.size() > 0) {
+            if (edit.equals("Y")) {
+                simpleInput.display(String.format("Choose a question to modify (input 1 to %d):\n", this.currentSurvey.questions.size()));
+                int modifyIndex = simpleInput.getValidIntegerInput();
+                while (modifyIndex < 1 || modifyIndex > this.currentSurvey.questions.size()) {
+                    simpleInput.display("Error: input must be a number in the range [1,6]:\n");
+                    modifyIndex = simpleInput.getValidIntegerInput();
+                }
+                // offset by one to be used as array index
+                modifyIndex = modifyIndex - 1;
+                this.editController.modifyQuestion(this.currentSurvey.questions.get(modifyIndex), this.isTest);
+                this.modifySurvey();
+            } else {
+                simpleInput.display("Do you want to save this and overwrite the original? (Y or N):\n");
+                edit = simpleInput.getValidInput();
+                // check if T or F
+                while (!(edit.equals("Y") || edit.equals("N"))) {
+                    simpleInput.display("Input must be Y or N:\n");
+                    edit = simpleInput.getValidInput();
+                }
+                if (edit.equals("Y")) {
+                    this.saveCurrentSurvey();
+                }
+            }
+        } else {
+            simpleInput.display("\nError: no questions\n");
+        }
+    }
+
+    public void tabulateSurvey() {
+        // get list of survey/test names
+        List<String> allOptions = this.repository.listSurveyNames(this.isTest);
+        List<String> options = new ArrayList<String>(1);
+        for (String name: allOptions) {
+            // check its one of the desired surveys
+            if (name.startsWith(String.format("%s-", this.currentSurvey.title))) {
+                options.add(name);
+            }
+        }
+
+        // collect completed surveys
+        List<Survey> surveys = new ArrayList<Survey>(options.size());
+        for (String name: options) {
+            surveys.add(this.repository.getSurvey(name, this.isTest));
+        }
+
+        // collect answers for each prompt
+        SurveyResults results = new SurveyResults();
+        for (Survey s: surveys) {
+            for (SurveyQuestion q: s.questions) {
+                // check if prompt exists already in map
+                if (results.resultsMap.containsKey(q.promptList)) {
+                    List<Answer> answers = results.resultsMap.get(q.promptList);
+                    answers.add(q.userAnswer);
+                    results.resultsMap.put(q.promptList, answers);
+                } else {
+                    List<Answer> answers = new ArrayList<Answer>(1);
+                    answers.add(q.userAnswer);
+                    results.resultsMap.put(q.promptList, answers);
+                }
+            }
+        }
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        for (PromptList key: results.resultsMap.keySet()) {
+            Set<Answer> answerSet = new HashSet<Answer>(results.resultsMap.get(key));
+            simpleInput.display("prompt:\n");
+            simpleInput.display(key.toString());
+            for (Answer answer: answerSet) {
+                simpleInput.display("\nanswer:\n");
+                simpleInput.display(answer.toString());
+                int count = 0;
+                for (int i = 0; i < results.resultsMap.get(key).size(); i++) {
+                    if (results.resultsMap.get(key).get(i).equals(answer)) {
+                        count++;
+                    }
+                }
+                simpleInput.display(String.format("\noccurred %d times\n\n", count));
+            }
+        }
+    }
+
+    public void chooseSurveyToModify() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("\nChoose one to modify\n");
+        this.loadSurvey();
+        this.modifySurvey();
+    }
+
+    public void chooseSurveyToTake() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("\nChoose one to take\n");
+        this.loadSurvey();
+        this.takeSurvey();
+    }
+
+    public void chooseSurveyToTabulate() {
+        // get list of survey/test names
+        List<String> options = this.repository.listSurveyNames(this.isTest);
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        // check that are some
+        if (options.size() > 0) {
+            simpleInput.display("\nChoose one to tabulate\n");
+            simpleInput.display("Options: \n");
+
+            for (String s: options) {
+                // only show rubrics
+                if(!s.contains("-")) {
+                    simpleInput.display(s + "\n");
+                }
+            }
+
+            // have user select a title that appeared in the list
+            simpleInput.display("Input a title: \n");
+            String name = simpleInput.getValidInput();
+            if (!options.contains(name)) {
+                simpleInput.display("\nError: does not exist!\n\n");
+                this.chooseSurveyToTabulate();
+                return;
+            }
+
+            this.currentSurvey = this.repository.getSurvey(name, this.isTest);
+            this.tabulateSurvey();
+        } else {
+            simpleInput.display("None found \n");
         }
     }
 
@@ -56,7 +222,7 @@ public class SurveyController {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         // no survey created or loaded
         if (this.currentSurvey == null) {
-            simpleInput.display("No survey or test loaded");
+            simpleInput.display("No survey or test loaded\n");
         } else {
             simpleInput.display(this.currentSurvey.toString());
         }
@@ -115,13 +281,13 @@ public class SurveyController {
             // have user select a title that appeared in the list
             simpleInput.display("Input a title: \n");
             String name = simpleInput.getValidInput();
-            while (!options.contains(name)) {
-                simpleInput.display("Does not exist \n");
-                simpleInput.display("Input a title: \n");
-                name = simpleInput.getValidInput();
+            if (!options.contains(name)) {
+                simpleInput.display("\nError: does not exist!\n\n");
+                this.loadSurvey();
+                return;
             }
 
-            this.currentSurvey = this.repository.getSurveyRubric(name, this.isTest);
+            this.currentSurvey = this.repository.getSurvey(name, this.isTest);
         } else {
             simpleInput.display("None found \n");
         }

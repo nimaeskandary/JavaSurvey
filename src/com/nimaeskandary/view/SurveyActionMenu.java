@@ -15,7 +15,7 @@ public class SurveyActionMenu extends Menu {
     }
 
     public enum SurveyActionMenuSelection implements MenuSelection {
-        Create, Display, Load, Save, MainMenu, Invalid;
+        Create, Display, Load, Save, Modify, Take, Tabulate, MainMenu, Invalid;
     }
 
     @Override
@@ -30,6 +30,12 @@ public class SurveyActionMenu extends Menu {
             case "4":
                 return SurveyActionMenuSelection.Save;
             case "5":
+                return SurveyActionMenuSelection.Modify;
+            case "6":
+                return SurveyActionMenuSelection.Take;
+            case "7":
+                return SurveyActionMenuSelection.Tabulate;
+            case "8":
                 return SurveyActionMenuSelection.MainMenu;
             default:
                 return SurveyActionMenuSelection.Invalid;
@@ -48,13 +54,16 @@ public class SurveyActionMenu extends Menu {
         text += String.format("2) Display a %s\n", surveyOrTest);
         text += String.format("3) Load a %s\n", surveyOrTest);
         text += String.format("4) Save a %s\n", surveyOrTest);
-        text += "5) Main Menu\n";
+        text += String.format("5) Modify an Existing %s\n", surveyOrTest);
+        text += String.format("6) Take a %s\n", surveyOrTest);
+        text += String.format("7) Tabulate a %s\n", surveyOrTest);
+        text += "8) Main Menu\n";
         text += "\nEnter selection:";
         return text;
     }
 
     @Override
     String invalidInputMessage() {
-        return "\nInvalid input! Must be 1, 2, 3, 4, or 5\n" + this.getMenuText();
+        return "\nInvalid input! Must be 1, 2, 3, 4, 5, 6, 7, or 8\n" + this.getMenuText();
     }
 }

@@ -33,9 +33,20 @@ public class AnswerController {
             case Ranking:
                 answer = this.answerRankingQuestion(question);
                 break;
+            case EssayAnswer:
+                answer = this.answerEssayQuestion(question);
         }
 
         return answer;
+    }
+
+    public Answer answerEssayQuestion(SurveyQuestion question) {
+        // get answer
+        SimpleInput simpleInput = new SimpleInput(bufferedReader, outputStream);
+        simpleInput.display("Enter paragraph:\n");
+        String response = simpleInput.getValidInput();
+
+        return new EssayAnswer(response);
     }
 
     public Answer answerTrueOrFalseQuestion(SurveyQuestion question) {
@@ -44,7 +55,7 @@ public class AnswerController {
         simpleInput.display("Enter T or F:\n");
         String response = simpleInput.getValidInput();
         // check if T or F
-        while(!(response.equals("T") || response.equals("F"))) {
+        while (!(response.equals("T") || response.equals("F"))) {
             simpleInput.display("Input must be T or F:");
             response = simpleInput.getValidInput();
         }
@@ -59,7 +70,7 @@ public class AnswerController {
         // get response
         int response = simpleInput.getValidIntegerInput();
         // validate in range
-        while(response < 1 || response > question.allowedNumChoices) {
+        while (response < 1 || response > question.allowedNumChoices) {
             simpleInput.display("Input must be between 1 and " + question.allowedNumChoices + "\n");
             simpleInput.display("Select from 1 to " + question.allowedNumChoices + ":\n");
             response = simpleInput.getValidIntegerInput();

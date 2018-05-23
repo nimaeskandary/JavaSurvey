@@ -24,7 +24,12 @@ public class MatchingAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
+    public boolean equals(Object o) {
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.answerData.hashCode();
     }
 }

@@ -22,7 +22,13 @@ public class TrueOrFalseAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
-        return false;
+    public boolean equals(Object o) {
+        TrueOrFalseAnswer otherAnswer = (TrueOrFalseAnswer) o;
+        return this.tOrF.equals(otherAnswer.tOrF);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.tOrF.hashCode();
     }
 }

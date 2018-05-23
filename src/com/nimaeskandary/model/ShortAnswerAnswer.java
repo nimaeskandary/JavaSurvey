@@ -27,7 +27,13 @@ public class ShortAnswerAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
-        return false;
+    public boolean equals(Object o) {
+        ShortAnswerAnswer otherAnswer = (ShortAnswerAnswer) o;
+        return this.answerData.equals(otherAnswer.answerData);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.answerData.hashCode();
     }
 }

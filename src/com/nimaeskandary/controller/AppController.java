@@ -12,15 +12,19 @@ public class AppController {
     private SurveyController surveyController;
     private SurveyController testController;
     private AnswerController answerController;
+    private EditController editController;
 
     public AppController(InputStream inputStream, OutputStream outputStream, Repository repository) {
         this.outputStream = outputStream;
         this.repository = repository;
         this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        this.answerController = new AnswerController(outputStream, bufferedReader);
-        this.surveyController = new SurveyController(outputStream, bufferedReader, repository, this.answerController, false);
-        this.testController = new SurveyController(outputStream, bufferedReader, repository, this.answerController, true);
-    }
+        this.answerController = new AnswerController(outputStream, this.bufferedReader);
+        this.editController = new EditController(outputStream, this.bufferedReader, this.answerController);
+        this.surveyController = new SurveyController(outputStream, this.bufferedReader, repository, this.answerController,
+                this.editController, false);
+        this.testController = new SurveyController(outputStream, this.bufferedReader, repository, this.answerController,
+                this.editController, true);
+        }
 
     public void menuScreen() {
         StartMenu menu = new StartMenu(bufferedReader, outputStream);

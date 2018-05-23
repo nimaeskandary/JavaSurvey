@@ -27,7 +27,28 @@ public class MultipleChoiceAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
-        return false;
+    public boolean equals(Object o) {
+        MultipleChoiceAnswer otherAnswer = (MultipleChoiceAnswer) o;
+        if (this.answerData.size() != otherAnswer.answerData.size()) {
+            return false;
+        }
+        for (int j = 0; j < this.answerData.size(); j++) {
+            boolean found = false;
+            for (int k = 0; k < otherAnswer.answerData.size(); k++) {
+                if (this.answerData.get(j).equals(otherAnswer.answerData.get(k))) {
+                    found = true;
+                    k = otherAnswer.answerData.size();
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.answerData.hashCode();
     }
 }

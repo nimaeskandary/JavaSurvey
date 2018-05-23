@@ -28,7 +28,13 @@ public class RankingAnswer extends Answer implements Serializable {
     }
 
     @Override
-    boolean equals(Answer other) {
-        return false;
+    public boolean equals(Object o) {
+        RankingAnswer otherAnswer = (RankingAnswer) o;
+        return this.answerData.equals(otherAnswer.answerData);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.answerData.hashCode();
     }
 }

@@ -42,4 +42,15 @@ public class PromptList implements Serializable {
         }
         return out;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        PromptList other = (PromptList) o;
+        return this.prompts.equals(other.prompts);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.prompts.hashCode();
+    }
 }
