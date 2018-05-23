@@ -3,29 +3,17 @@ package com.nimaeskandary.model;
 import com.nimaeskandary.model.Answer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 
-public class MatchingAnswer extends Answer implements Serializable {
-    private ArrayList<Map<Integer, String>> answerData;
-
-    public MatchingAnswer(ArrayList<Map<Integer, String>> answerData) {
-        this.answerData = answerData;
-    }
-
-    @Override
-    public String toString() {
-        return null;
-    }
-
-    @Override
-    Answer makeCopy() {
-        return null;
+public class MatchingAnswer extends RankingAnswer implements Serializable {
+    public MatchingAnswer(HashMap<String, Integer> answerData) {
+        super(answerData);
     }
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        RankingAnswer otherAnswer = (RankingAnswer) o;
+        return this.answerData.equals(otherAnswer.answerData);
     }
 
     @Override

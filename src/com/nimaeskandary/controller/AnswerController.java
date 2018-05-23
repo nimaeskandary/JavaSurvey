@@ -35,6 +35,10 @@ public class AnswerController {
                 break;
             case EssayAnswer:
                 answer = this.answerEssayQuestion(question);
+                break;
+            case Matching:
+                answer = this.answerMatchingQuestion(question);
+                break;
         }
 
         return answer;
@@ -132,5 +136,26 @@ public class AnswerController {
         }
 
         return new RankingAnswer(choices);
+    }
+
+    public Answer answerMatchingQuestion(SurveyQuestion question) {
+        SimpleInput simpleInput = new SimpleInput(bufferedReader, outputStream);
+        HashMap<String, Integer> choices = new HashMap<String, Integer>();
+
+        // start at A and increment letter for each choice
+        for (char option = 'A'; option < 'A' + question.allowedNumChoices; option++) {
+            // get input
+            simpleInput.display("Input match for " + option + ", must be between 1 and " + question.allowedNumChoices + " :");
+            Integer input = simpleInput.getValidIntegerInput();
+            // validate in range
+            while(input < 1 || input > question.allowedNumChoices) {
+                simpleInput.display("match must be between 1 and " + question.allowedNumChoices + "\n");
+                simpleInput.display("Input match for option " + option + ":");
+                input = simpleInput.getValidIntegerInput();
+            }
+            choices.put(Character.toString(option), input);
+        }
+
+        return new MatchingAnswer(choices);
     }
 }

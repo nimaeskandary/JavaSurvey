@@ -10,8 +10,4 @@ public class Test extends Survey implements Serializable {
     public Test(Survey survey) {
         super(survey);
     }
-
-    public double gradeTest() {
-        return 0.0;
-    }
 }

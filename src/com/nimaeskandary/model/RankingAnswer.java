@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class RankingAnswer extends Answer implements Serializable {
-    private HashMap<String, Integer> answerData;
+    protected HashMap<String, Integer> answerData;
 
     public RankingAnswer(HashMap<String, Integer> answerData) {
         this.answerData = answerData;

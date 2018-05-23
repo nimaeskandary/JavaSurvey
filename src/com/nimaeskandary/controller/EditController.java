@@ -31,6 +31,9 @@ public class EditController {
             case Ranking:
                 question = this.editRankingOptions(question);
                 break;
+            case Matching:
+                question = this.editMatchingOptions(question);
+                break;
             default:
                 break;
         }
@@ -114,12 +117,64 @@ public class EditController {
                 option = simpleInput.getValidChar();
             }
             // edit option
-            simpleInput.display("Enter a new choice for " + option + ":\n");
+            simpleInput.display("Enter a new value for " + option + ":\n");
             int index = option - 'A' + 1;
             question.promptList.editPrompt(index, simpleInput.getValidInput());
             simpleInput.display("\nQuestion edited:\n" + question.toString());
             // check if more should be edited
             return this.editRankingOptions(question);
+        }
+        return question;
+    }
+
+    public SurveyQuestion editMatchingOptions(SurveyQuestion question) {
+        SimpleInput simpleInput = new SimpleInput(bufferedReader, outputStream);
+        simpleInput.display("Do you want to modify an option (Y or N)?");
+        String edit = simpleInput.getValidInput();
+        // check if Y or N
+        while (!(edit.equals("Y") || edit.equals("N"))) {
+            simpleInput.display("Input must be Y or N:\n");
+            edit = simpleInput.getValidInput();
+        }
+        if (edit.equals("Y")) {
+            simpleInput.display("Do you want to edit category 1 (A, B, C...) or category 2 (1, 2, 3...) (input 1 or 2):\n");
+            int category = simpleInput.getValidIntegerInput();
+            while (category != 1 && category !=2) {
+                simpleInput.display("Input 1 or 2:\n");
+                category = simpleInput.getValidIntegerInput();
+            }
+            if(category == 1) {
+                char lastOption = (char) ((int) 'A' + question.allowedNumChoices - 1);
+                simpleInput.display("Select from A to " + lastOption + ":\n");
+                char option = simpleInput.getValidChar();
+                while (option < 'A' || option > lastOption) {
+                    simpleInput.display("Input must be between A and " + lastOption + "\n");
+                    simpleInput.display("Select from A to " + lastOption + ":\n");
+                    option = simpleInput.getValidChar();
+                }
+                // edit option
+                simpleInput.display("Enter a new value for " + option + ":\n");
+                int index = option - 'A' + 1;
+                question.promptList.editPrompt(index, simpleInput.getValidInput());
+                simpleInput.display("\nQuestion edited:\n" + question.toString());
+                // check if more should be edited
+                return this.editRankingOptions(question);
+            } else {
+                simpleInput.display("Select from 1 to " + question.allowedNumChoices + ":\n");
+                // get option
+                int option = simpleInput.getValidIntegerInput();
+                while (option < 1 || option > question.allowedNumChoices) {
+                    simpleInput.display("Input must be between 1 and " + question.allowedNumChoices + "\n");
+                    simpleInput.display("Select from 1 to " + question.allowedNumChoices + ":\n");
+                    option = simpleInput.getValidIntegerInput();
+                }
+                // edit option
+                simpleInput.display(String.format("Enter a new value for %d:\n", option));
+                question.promptList.editPrompt(option + (question.allowedNumChoices / 2) - 1, simpleInput.getValidInput());
+                simpleInput.display("\nQuestion edited:\n" + question.toString());
+                // check if more should be edited
+                return this.editMultipleChoiceOptions(question);
+            }
         }
         return question;
     }

@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class SurveyActionMenu extends Menu {
-    private Boolean isTest;
+    protected Boolean isTest;
 
     public SurveyActionMenu(BufferedReader bufferedReader, OutputStream outputStream, Boolean isTest) {
         super(bufferedReader, outputStream);
@@ -15,7 +15,7 @@ public class SurveyActionMenu extends Menu {
     }
 
     public enum SurveyActionMenuSelection implements MenuSelection {
-        Create, Display, Load, Save, Modify, Take, Tabulate, MainMenu, Invalid;
+        Create, Display, Load, Save, Modify, Take, Tabulate, Grade, MainMenu, Invalid;
     }
 
     @Override

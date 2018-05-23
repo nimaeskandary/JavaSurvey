@@ -49,7 +49,7 @@ public class AddQuestionMenu extends Menu {
         text += "3) Add a new short answer question\n";
         text += "4) Add a new essay question\n";
         text += "5) Add a new ranking question\n";
-        text += "6) Add a new matching choice question\n";
+        text += "6) Add a new matching question\n";
         text += "7) Stop adding questions\n";
         text += "\nEnter selection:";
         return text;

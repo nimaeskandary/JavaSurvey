@@ -35,7 +35,12 @@ public class SurveyController {
 
     public void SurveyActionScreen() {
         // display menu
-        SurveyActionMenu menu = new SurveyActionMenu(this.bufferedReader, this.outputStream, this.isTest);
+        SurveyActionMenu menu;
+        if (this.isTest) {
+            menu = new TestActionMenu(this.bufferedReader, this.outputStream, this.isTest);
+        } else {
+            menu = new SurveyActionMenu(this.bufferedReader, this.outputStream, this.isTest);
+        }
         menu.display(menu.getMenuText());
         // get valid selection
         SurveyActionMenuSelection selection = (SurveyActionMenuSelection) menu.getValidMenuSelection();
@@ -62,6 +67,8 @@ public class SurveyController {
             case Tabulate:
                 this.chooseSurveyToTabulate();
                 break;
+            case Grade:
+                this.chooseSurveyToGrade();
             default:
                 break;
         }
@@ -72,7 +79,7 @@ public class SurveyController {
         simpleInput.display("Enter your name:\n");
         this.currentSurvey.takerName = simpleInput.getValidInput();
         for (SurveyQuestion q: this.currentSurvey.questions) {
-            simpleInput.display(q.toString());
+            simpleInput.display(q.promptList.toString());
             q.userAnswer = this.answerController.answerQuestion(q);
         }
         this.repository.putUserSurvey(this.currentSurvey, this.isTest);
@@ -172,6 +179,22 @@ public class SurveyController {
         }
     }
 
+    public void gradeSurvey() {
+        int numCorrect = 0;
+        for (SurveyQuestion sq: this.currentSurvey.questions) {
+            if (!sq.type.equals(SurveyQuestion.QuestionType.EssayAnswer)) {
+                TestQuestion q = (TestQuestion) sq;
+                if (q.correctAnswer.equals(q.userAnswer)) {
+                    numCorrect++;
+                }
+            }
+        }
+
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        double grade = (double) numCorrect / this.currentSurvey.questions.size() * 100;
+        simpleInput.display(String.format("Grade: %.2f\n", grade));
+    }
+
     public void chooseSurveyToModify() {
         SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
         simpleInput.display("\nChoose one to modify\n");
@@ -184,6 +207,13 @@ public class SurveyController {
         simpleInput.display("\nChoose one to take\n");
         this.loadSurvey();
         this.takeSurvey();
+    }
+
+    public void chooseSurveyToGrade() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("\nChoose one to grade\n");
+        this.loadSurvey();
+        this.gradeSurvey();
     }
 
     public void chooseSurveyToTabulate() {
@@ -258,6 +288,9 @@ public class SurveyController {
                 break;
             case Ranking:
                 this.addRankingQuestion();
+                break;
+            case Matching:
+                this.addMatchingQuestion();
                 break;
             case Stop:
                 this.nameCurrentSurvey();
@@ -406,6 +439,46 @@ public class SurveyController {
 
         } else {
             SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.Ranking, promptList, numChoices);
+            this.currentSurvey.addQuestion(surveyQuestion);
+        }
+    }
+
+    public void addMatchingQuestion() {
+        SimpleInput simpleInput = new SimpleInput(this.bufferedReader, this.outputStream);
+        simpleInput.display("Enter the prompt for your matching question:\n");
+
+        MatchingPromptList promptList = new MatchingPromptList(simpleInput.getValidInput());
+        simpleInput.display("Enter the number of pairs in your matching question:\n");
+        Integer numChoices = simpleInput.getValidIntegerInput();
+
+        // limit number of choices because chars A-Z are used in logic
+        while(numChoices > 27) {
+            simpleInput.display("Cannot exceed 27 pairs\n");
+            simpleInput.display("Enter the number of pairs in your matching question:\n");
+            numChoices = simpleInput.getValidIntegerInput();
+        }
+
+        // enter group one values
+        for (char option = 'A'; option < 'A' + numChoices; option ++) {
+            simpleInput.display("Enter option " + option + " (category one):\n");
+            promptList.addPrompt(simpleInput.getValidInput());
+        }
+
+        // enter group two values
+        for (int i = 1; i <= numChoices; i ++) {
+            simpleInput.display("Enter option " + i + " (category two):\n");
+            promptList.addPrompt(simpleInput.getValidInput());
+        }
+
+        // if test get right answer
+        if(this.isTest) {
+            simpleInput.display("What is the correct answer?\n");
+            TestQuestion testQuestion = new TestQuestion(SurveyQuestion.QuestionType.Matching, promptList, numChoices);
+            testQuestion.correctAnswer = this.answerController.answerQuestion(testQuestion);
+            this.currentSurvey.addQuestion(testQuestion);
+
+        } else {
+            SurveyQuestion surveyQuestion = new SurveyQuestion(SurveyQuestion.QuestionType.Matching, promptList, numChoices);
             this.currentSurvey.addQuestion(surveyQuestion);
         }
     }
